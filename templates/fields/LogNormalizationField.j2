@@ -1,0 +1,45 @@
+<div class="row px-4 px-lg-3 pb-3">
+  <div class="col-lg-3 bold text-lg-right my-auto">
+    {{ this.args.label }}
+    {%- if this.args.description %}
+      <sup data-toggle="tooltip" title="{{ this.args.description }}"><i class="far fa-question-circle"></i></sup>
+    {% endif -%}
+  </div>
+  <div class="col-lg-1 pt-1 pt-lg-0">
+    <div class="border-grey rounded d-table mt-lg-1 overflow-hidden my-auto">
+      <input type="radio" id="{{ this.args.name }}-yes" name="{{ this.args.name }}" value="yes" class="d-none" {% if this.value %} checked{% endif %}>
+      <label for="{{ this.args.name }}-yes" class="radio-label px-2 py-1 cursor-pointer d-table-cell">Yes</label>
+      <input type="radio" id="{{ this.args.name }}-no" name="{{ this.args.name }}" value="no" class="d-none" {% if not this.value %} checked{% endif %}>
+      <label for="{{ this.args.name }}-no" class="radio-label px-2 py-1 cursor-pointer d-table-cell">No</label>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+	var radio = document.getElementById('{{ this.args.name }}-yes');
+
+	window.addEventListener("message", (event) => {
+		var localhost_patt = /^http:\/\/localhost:[0-9]+$/;
+		var xenabrowser_patt = /^https:\/\/([a-z]+\.)?xenabrowser.net$/;
+		var georgetown = 'https://gdochub.georgetown.edu';
+		if (!localhost_patt.test(event.origin) && !xenabrowser_patt.test(event.origin) && !event.origin.startsWith(georgetown))
+			return;
+
+		var para = JSON.parse(event.data);
+		var unit = para.preferredExpression.unit;
+    var countData = unit && !(unit.trim().toLowerCase().startsWith("log")) && unit.trim().toLowerCase().includes("count");
+		var tpmData = unit && unit.trim().toLowerCase() === "tpm";
+		var fpkmData = unit && unit.trim().toLowerCase().includes("fpkm");
+		var logData = unit && unit.trim().toLowerCase().startsWith("log");
+
+		var logTransform = unit && !logData && (countData || tpmData || fpkmData);
+		if ( logTransform) {
+			radio.checked = true;
+		}
+
+		event.source.postMessage('ack', '*');
+	}, false);
+})();
+
+</script>

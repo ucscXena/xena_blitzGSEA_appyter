@@ -1,0 +1,61 @@
+<div class="ipynb-field" style ="display:none">
+    <div class="form-group">
+        <label for="{{ this.args.name }}">
+            {{ this.args.label }}
+        </label>
+        <input type="text" id="{{ this.args.name }}"  name="{{ this.args.name }}" class="form-control" placeholder="{{ this.args.hint }}" value="{{ this.args.default }}">
+    </div>
+</div>
+
+<div class="row px-4 px-lg-3 pb-4">
+    <div class="col-lg-3 bold text-lg-right my-auto">
+        Study:
+    </div>
+    <div class="col-lg-6 pt-2 pt-lg-0">
+        <span id= "cohort"> {{ this.args.default }} </span>
+    </div>
+</div>
+<div class="row px-4 px-lg-3 pb-4">
+    <div class="col-lg-3 bold text-lg-right my-auto">
+        Gene expression dataset:
+    </div>
+    <div class="col-lg-6 pt-2 pt-lg-0">
+        <span id= "expr_dataset"> {{ this.args.default }} </span>
+    </div>
+</div>
+<div class="row px-4 px-lg-3 pb-4">
+    <div class="col-lg-3 bold text-lg-right my-auto">
+        Gene expression dataset unit:
+    </div>
+    <div class="col-lg-6 pt-2 pt-lg-0">
+        <span id= "expr_unit"> {{ this.args.default }} </span>
+    </div>
+</div>
+
+<script>
+(function() {
+	var input = document.getElementById('{{ this.args.name }}');
+    var span_cohort = document.getElementById('cohort');
+    var span_expr = document.getElementById('expr_dataset');
+    var span_unit = document.getElementById('expr_unit');
+
+    window.addEventListener("message", (event) => {
+        var localhost_patt = /^http:\/\/localhost:[0-9]+$/;
+        var xenabrowser_patt = /^https:\/\/([a-z]+\.)?xenabrowser.net$/;
+        var georgetown = 'https://gdochub.georgetown.edu';
+        if (!localhost_patt.test(event.origin) && !xenabrowser_patt.test(event.origin) && !event.origin.startsWith(georgetown))
+			return;
+
+		input.value = event.data;
+
+        var para = JSON.parse(event.data);
+        if (para.cohort)
+            span_cohort.innerHTML = para.cohort.name;
+        if (para.preferredExpression) {
+            span_expr.innerHTML = para.preferredExpression.label || para.preferredExpression.name;
+            span_unit.innerHTML = para.preferredExpression.unit;
+        }
+		event.source.postMessage('ack', '*');
+	}, false);
+})();
+</script>
