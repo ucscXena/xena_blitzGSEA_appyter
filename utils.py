@@ -213,13 +213,10 @@ def normalize(dataset, current_dataset, logCPM_normalization, log_normalization,
         dataset[normalization] = qnormalization(data)
     return dataset, normalization
 
-def create_download_link(df, title = "Download CSV file: {}", filename = "data.csv", file_type = ".csv"):  
-    if file_type == ".csv":
-        df.to_csv(filename)
-        html = "<a href=\"./{}\" target='_blank'>{}</a>".format(filename, title.format(filename))
-    elif file_type == ".tsv":
-        df.to_csv(filename, sep="\t")
-        html = "<a href=\"./{}\" target='_blank'>{}</a>".format(filename, title.format(filename))
+def create_download_link(df, title = "Download CSV file: {}", filename = "data.csv"):  
+    df.to_csv(filename)
+    html = "<a href=\"./{}\" target='_blank'>{}</a>".format(filename, title.format(filename))
+    
     return HTML(html)
 
 def display_link(url):
@@ -799,173 +796,19 @@ def reformat_signature(signatures, diff_gex_method):
     for label, signature in signatures.items():
         if diff_gex_method == "characteristic_direction":
             signature_df = signature[['CD-coefficient']].copy()
+            signature_df.reset_index(inplace=True)
+            signature_df.rename(columns={'index': '0', 'CD-coefficient': '1'}, inplace=True)
         elif diff_gex_method == "limma" or diff_gex_method == "limma_voom" or diff_gex_method == "edgeR":
             signature_df = signature[['logFC']].copy()
+            signature_df.reset_index(inplace=True)
+            signature_df.rename(columns={'index': '0', 'logFC': '1'}, inplace=True)
         elif diff_gex_method == "DESeq2":
             signature_df = signature[['log2FoldChange']].copy()
+            signature_df.reset_index(inplace=True)
+            signature_df.rename(columns={'index': '0', 'log2FoldChange': '1'}, inplace=True)
     
-    signature_df.reset_index(inplace=True)
-    signature_df.rename(columns={'index': 0, 'logFC': 1}, inplace=True)
     return signature_df
     
 def run_blitzGSEA(signature, library):
     result = blitz.gsea(signature, library)
     return result
-
-def run_full_table(full_table):
-    app = JupyterDash(__name__)
-
-    app.layout = html.Div([
-        dash_table.DataTable(
-            id = 'datatable-interactivity',
-            columns = [
-                {"name": i, "id": i, "deletable": False, "selectable": False} for i in full_table.columns
-            ],
-            data=full_table.to_dict('records'),
-            editable=False,
-            style_cell={'textAlign': 'left'},
-            sort_action="native",
-            sort_mode="multi",
-            row_deletable=False,
-            selected_columns=[],
-            selected_rows=[],
-            page_action="native",
-            page_current= 0,
-            page_size=15,
-        ),
-        html.Div(id='datatable-interactivity-container')
-    ])
-
-    @app.callback(
-        Output('datatable-interactivity', 'style_data_conditional'),
-        Input('datatable-interactivity', 'selected_columns')
-    )
-
-    def update_styles(selected_columns):
-        return [{
-            'if': { 'column_id': i },
-            'background_color': '#D2F3FF'
-        } for i in selected_columns]
-
-    app.run_server(mode='inline')
-    
-def generate_top_table(signature, library, result, n):
-    lines = []
-    sig = signature.sort_values(1, ascending=False).set_index(0)
-    sig = sig[~sig.index.duplicated(keep='first')]
-    
-    fig = go.Figure(layout_xaxis_range=[-0.1,2],
-                    layout_yaxis_range=[-0.2, 1.1],
-                    layout = {'xaxis': {'title': 'x-label',
-                        'visible': False,
-                        'showticklabels': False},
-                        'yaxis': {'title': 'y-label',
-                        'visible': False,
-                        'showticklabels': False}}
-                   )
-    fig.add_shape(type="line", x0=0.2, y0=-0.1, x1=0.2, y1=1, line_width=2, line_dash="solid")
-    fig.add_shape(type="line", x0=0.8, y0=-0.1, x1=0.8, y1=1, line_width=2, line_dash="solid")
-    fig.add_shape(type="line", x0=0.9, y0=-0.1, x1=0.9, y1=1, line_width=2, line_dash="solid")
-    
-    ln = np.linspace(-0.1,1,n+1)[::-1]
-    for line in range(0, len(ln)):
-        fig.add_shape(type="line", x0=0, y0=ln[line], x1=1.5, y1=ln[line], line_width=2, line_dash="solid")
-    fig.add_annotation(x=0.03, 
-                       y=1.04,
-                       showarrow=False, 
-                       xanchor="left",
-                       text = "NES",
-                       font=dict(size=16)
-                      )
-    fig.add_annotation(x=0.80, 
-                       y=1.04,
-                       showarrow=False, 
-                       xanchor="left",
-                       text = "SIZE",
-                       font=dict(size=16)
-                      )
-    fig.add_annotation(x=0.92, 
-                       y=1.04,
-                       showarrow=False, 
-                       xanchor="left",
-                       text="SET",
-                       font=dict(size=16)
-                      )
-    
-    for i in range(n):
-        fig.add_annotation(x=0.03, 
-                           y=(ln[i]+ln[i+1])/2, 
-                           showarrow=False,
-                           xanchor="left",
-                           text="{:.3f}".format(result.iloc[i, 1])
-                          )
-        fig.add_annotation(x=0.82, 
-                           y=(ln[i]+ln[i+1])/2, 
-                           showarrow=False,
-                           xanchor="left",
-                           text="{}".format(result.iloc[i, 5])
-                          )
-        fig.add_annotation(x=0.92, 
-                           y=(ln[i]+ln[i+1])/2,
-                           showarrow=False,
-                           xanchor="left",
-                           captureevents= True,
-                           text="{}".format(result.index[i])
-                          )
-        gs = set(library[result.index[i]])
-        hits = np.array([i for i,x in enumerate(sig.index) if x in gs])
-        hits = (hits/len(sig.index))*0.6+0.2
-        # reduce run-time refrenced from :https://stackoverflow.com/questions/70276242/adding-500-circles-in-a-plotly-graph-using-add-shape-function-takes-45-seconds
-        if result.iloc[i, 1] > 0:
-            for hit in hits:
-                lines.append(dict(type="line", x0=hit, y0=ln[i+1],
-                                  x1=hit, y1=ln[i],
-                                  line_width=0.25,
-                                  line_dash="solid",
-                                  line=dict(color="red"))
-                            )
-        else:
-            for hit in hits:
-                lines.append(dict(type="line", x0=hit, y0=ln[i+1],
-                                  x1=hit, y1=ln[i],
-                                  line_width=0.25,
-                                  line_dash="solid",
-                                  line=dict(color="blue"))
-                            )
-                    
-    fig.update_layout(shapes=lines, plot_bgcolor='white', width = 1000, height = (0.55*100*n))
-                             
-    return fig
-
-def detailed_output(signature, library, full_table, geneset):
-    signature_map = {} 
-    details_dict = {} 
-    signature = signature.sort_values(1, ascending = False).set_index(0)
-    signature = signature[~signature.index.duplicated(keep = 'first')]
-    leading_edges = full_table.loc[geneset, 'leading_edge']
-    leading_edges = leading_edges.split(',')
-    
-    for i, h in enumerate(signature.index): 
-        signature_map[h] = i
-
-    geneset = library[geneset]
-    running_sum, es = blitz.enrichment_score(np.array(np.abs(signature.iloc[:,0])), signature_map, geneset)
-    running_sum = list(running_sum)
-    
-    for i, x in enumerate(signature.index): 
-        if x in geneset: 
-            details_dict[x] = [i]
-    
-    for key in details_dict.keys(): 
-        value = signature.loc[key][1] 
-        details_dict[key].append(value)
-        details_dict[key].append(running_sum[details_dict[key][0]])
-        if key in leading_edges:
-            details_dict[key].append("Yes")
-        else:
-            details_dict[key].append("No")
-
-    df = pd.DataFrame.from_dict(details_dict, orient = 'index') 
-    df.columns = ["Rank in Gene List", "Rank Metric Score", "Running ES", "Leading Edge"]
-    
-    return df 
