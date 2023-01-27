@@ -1,0 +1,32 @@
+{
+    "$schema": "https://raw.githubusercontent.com/MaayanLab/appyter-catalog/main/schema/appyter-validator.json",
+    "name": "Xena_blitzGSEA",
+    "title": "Xena Gene Set Enrichment Analysis with blitzGSEA",
+    "version": "0.0.1",
+    "description": "Gene set enrichment analysis with blitzGSEA (computationally performant GSEA implementation developed by Maayan Lab) using data from the Xena browser.",
+    "image": "thumbnail.png",
+    "authors": [
+      {
+        "name": "Cally Lin",
+        "email": "clin125@ucsc.edu"
+      }
+    ],
+    "url": "https://github.com/callylin/xena_blitzGSEA_appyter",
+    "tags": [
+      "Enrichment Analysis",
+      "Enrichr",
+      "L1000",
+      "L1000FWD",
+      "RNA-seq",
+      "Xena"
+    ],
+    "license": "CC-BY-NC-SA-4.0",
+    "appyter": {
+      "file": "blitzGSEA_Analysis_Pipeline.ipynb",
+      "profile": "biojupies",
+      "extras": [
+        "toc",
+        "toggle-code"
+      ]
+    }
+  }

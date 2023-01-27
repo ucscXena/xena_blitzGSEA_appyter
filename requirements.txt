@@ -1,0 +1,18 @@
+appyter @ git+https://github.com/Maayanlab/appyter.git
+blitzgsea @ git+https://github.com/Maayanlab/blitzgsea
+maayanlab-bioinformatics @ git+https://github.com/Maayanlab/maayanlab-bioinformatics@v0.4.3
+geode @ git+https://github.com/Maayanlab/geode
+dash
+plotly
+rpy2
+ipython 
+numpy
+pandas
+urllib3
+chart_studio
+scipy 
+requests
+certifi
+sklearn
+smart_open
+jupyter_dash
