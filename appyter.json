@@ -13,11 +13,9 @@
     ],
     "url": "https://github.com/callylin/xena_blitzGSEA_appyter",
     "tags": [
-      "Enrichment Analysis",
+      "Gene Set Enrichment Analysis",
+      "GSEA",
       "Enrichr",
-      "L1000",
-      "L1000FWD",
-      "RNA-seq",
       "Xena"
     ],
     "license": "CC-BY-NC-SA-4.0",
