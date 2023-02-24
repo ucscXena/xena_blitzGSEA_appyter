@@ -23,8 +23,8 @@
       "file": "blitzGSEA_Analysis_Pipeline.ipynb",
       "profile": "biojupies",
       "extras": [
-        "toc",
-        "toggle-code"
+        "toggle-code",
+        "hide-code"
       ]
     }
   }
