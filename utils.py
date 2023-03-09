@@ -1,5 +1,6 @@
 from rpy2 import robjects
 from rpy2.robjects import r, pandas2ri
+
 # Basic libraries
 import pandas as pd
 import math
@@ -39,6 +40,7 @@ import scipy.stats as ss
 from sklearn.decomposition import PCA
 from maayanlab_bioinformatics.normalization.quantile import quantile_normalize
 from maayanlab_bioinformatics.dge.characteristic_direction import characteristic_direction
+
 # Import umap
 from sklearn.manifold import TSNE
 
@@ -697,7 +699,6 @@ def run_volcano(signature, signature_label, dataset, pvalue_threshold, logfc_thr
                 color.append('red')
             else:
                 color.append('grey')
-
         else:
             color.append('grey')
 
@@ -750,7 +751,6 @@ def run_maplot(signature, signature_label='', pvalue_threshold=0.05, logfc_thres
                 color.append('red')
             else:
                 color.append('black')
-
         else:
             color.append('black')
     
