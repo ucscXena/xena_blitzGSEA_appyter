@@ -809,6 +809,6 @@ def reformat_signature(signatures, diff_gex_method):
     
     return signature_df
     
-def run_blitzGSEA(signature, library):
-    result = blitz.gsea(signature, library)
+def run_blitzGSEA(signature, library, permuations=2000, anchors=20, min_size=5, max_size=500, processes=4, plotting=False, verbose=False, symmetric=False, signature_cache=True, shared_null=False, seed=0):
+    result = blitz.gsea(signature, library, permuations, anchors, min_size, max_size, processes, plotting, verbose, symmetric, signature_cache, shared_null, seed)
     return result
