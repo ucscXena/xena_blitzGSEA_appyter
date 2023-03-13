@@ -1,5 +1,5 @@
 appyter @ git+https://github.com/Maayanlab/appyter.git
-blitzgsea @ git+https://github.com/Maayanlab/blitzgsea
+blitzgsea @ git+https://github.com/callylin/blitzgsea.git
 maayanlab-bioinformatics @ git+https://github.com/Maayanlab/maayanlab-bioinformatics@v0.4.3
 geode @ git+https://github.com/Maayanlab/geode
 dash
