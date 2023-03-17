@@ -169,6 +169,7 @@ def CPM(data):
         data = data.fillna(0)
         
     return data
+
 def logCPM(data):
 
     with warnings.catch_warnings():
@@ -179,6 +180,7 @@ def logCPM(data):
 
     # Return
     return data
+
 def log(data):
 
     with warnings.catch_warnings():
@@ -187,9 +189,10 @@ def log(data):
         data = np.log10(data+1)
 
     return data
+
 def qnormalization(data):
-  
     X_quantile_norm = quantile_normalize(data)
+
     return X_quantile_norm  
 
 def normalize(dataset, current_dataset, logCPM_normalization, log_normalization, z_normalization, q_normalization):
@@ -213,6 +216,7 @@ def normalize(dataset, current_dataset, logCPM_normalization, log_normalization,
         data = dataset[normalization]
         normalization += '+q_norm'
         dataset[normalization] = qnormalization(data)
+
     return dataset, normalization
 
 def create_download_link(df, title = "Download CSV file: {}", filename = "data.csv"):  
@@ -223,6 +227,7 @@ def create_download_link(df, title = "Download CSV file: {}", filename = "data.c
 
 def display_link(url):
     raw_html = '<a href="%s" target="_blank">%s</a>' % (url, url)
+
     return display(HTML(raw_html))
 
 def display_object(counter, caption, df=None, istable=True):
@@ -233,6 +238,7 @@ def display_object(counter, caption, df=None, istable=True):
     else:
         display(Markdown("*Figure {}. {}*".format(counter, caption)))
     counter += 1
+
     return counter
 
 def run_dimension_reduction(dataset, meta_id_column_name, method='PCA', normalization='logCPM', nr_genes=2500, filter_samples=True, plot_type='interactive'):
@@ -287,6 +293,7 @@ def run_dimension_reduction(dataset, meta_id_column_name, method='PCA', normaliz
                    'nr_genes': nr_genes, 
                    'normalization': normalization, 'signature_metadata': dataset.get('signature_metadata'), 
                    'plot_type': plot_type}
+    
     return results
 
 def plot_samples(pca_results, meta_id_column_name, meta_class_column_name, counter, plot_type='interactive',):
@@ -386,6 +393,7 @@ def plot_samples(pca_results, meta_id_column_name, meta_class_column_name, count
         py.image.ishow(fig)
     display(Markdown("*Figure {}. {}*".format(counter, caption)))
     counter += 1
+
     return counter
     
 #############################################
@@ -703,6 +711,7 @@ def run_volcano(signature, signature_label, dataset, pvalue_threshold, logfc_thr
             color.append('grey')
 
     volcano_plot_results = {'x': signature[logfc_colname], 'y': -np.log10(signature[pval_colname]), 'text':text, 'color': color, 'signature_label': signature_label, 'plot_type': plot_type}
+    
     return volcano_plot_results
         
 
@@ -756,6 +765,7 @@ def run_maplot(signature, signature_label='', pvalue_threshold=0.05, logfc_thres
     
     # Return 
     volcano_plot_results = {'x': signature[expr_colname], 'y': signature[logfc_colname], 'text':text, 'color': color, 'signature_label': signature_label, 'plot_type': plot_type}
+    
     return volcano_plot_results
 
 def plot_maplot(volcano_plot_results):    
@@ -779,6 +789,7 @@ def xenaFileDownloadLink(host, dataset_name):
         host = host[:-1]
     head, tail = os.path.split(dataset_name)
     tail = urllib.parse.quote_plus(tail)
+    
     return host + '/download/' + os.path.join(head, tail)
 
 def reformat_gmt(file):
@@ -790,6 +801,7 @@ def reformat_gmt(file):
             geneset_dict[gene[0]] = [gene[1]] 
             for item in range(2, len(gene)):
                 geneset_dict[gene[0]].append(gene[item])
+    
     return geneset_dict
 
 def reformat_signature(signatures, diff_gex_method):
