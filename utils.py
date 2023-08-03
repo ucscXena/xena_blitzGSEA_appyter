@@ -352,6 +352,7 @@ def plot_samples(pca_results, meta_id_column_name, meta_class_column_name, count
 
     data = [] # To collect all Scatter3d instances
     for (cls), meta_df_sub in meta_df.groupby([meta_class_column_name]):
+        cls = ''.join(cls)
         # Iteratate through samples grouped by class
         display_name = '%s' % (cls)
         # Initiate a Scatter3d instance for each group of samples specifying their coordinates
